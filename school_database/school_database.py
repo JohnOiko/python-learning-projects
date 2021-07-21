@@ -1,5 +1,5 @@
-# current student database
-students = [
+# initial pupil database
+pupils = [
     {
         "id": 1000,
         "first name": "John",
@@ -28,136 +28,202 @@ students = [
     }
 ]
 
-# minimum and maximum number of class
-min_class_number = 1
-max_class_number = 6
 
-menu_string = ("Available actions:\n"
-               "1. Save new student\n"
-               "2. Print existing student\n"
-               "3. Update existing student\n"
-               "4. Delete existing student\n"
-               "5. Exit application\n\n"
-               "Pick an action: ")
+def input_menu_choice():
+    # read action choice
+    action_choice = input("Available actions:\n"
+                          "1. Save new pupil\n"
+                          "2. Print existing pupil\n"
+                          "3. Update existing pupil\n"
+                          "4. Delete existing pupil\n"
+                          "5. Exit application\n\n"
+                          "Pick an action: ").strip()
+    while action_choice not in {"1", "2", "3", "4", "5"}:
+        action_choice = input("Pick an action (1 to 5): ")
+    print(f"\n{'=' * 30}\n")
+    return int(action_choice)
 
-separator_string = f"\n{'=' * 30}\n"
 
-student_classes = (list(str(number) for number in range(min_class_number, max_class_number + 1)))
+def print_pupil(pupil):
+    max_print_length = 14
+    if "identity number" in pupil.keys():
+        max_print_length = 16
+    print(f"First name:\t {pupil['first name']}\n"
+          f"Last name:\t {pupil['last name']}".expandtabs(max_print_length))
+    if "identity number" in pupil.keys():
+        print(f"Father's name:\t {pupil['fathers name']}".expandtabs(max_print_length))
+    else:
+        print(f"Father's name: {pupil['fathers name']}")
+    print(f"Age:\t {pupil['age']}\n"
+          f"Class:\t {pupil['class']}".expandtabs(max_print_length))
+    if "identity number" in pupil.keys():
+        print(f"Identity number: {pupil['identity number']}")
 
-# this is when the user starts interacting with the application
-print(f"{'=' * 30}\n")
 
-# read action choice
-action_choice = input(menu_string).strip()
-while action_choice not in {"1", "2", "3", "4", "5", "5"}:
-    action_choice = input("Pick an action (1 to 5): ")
-action_choice = int(action_choice)
-print(separator_string)
+def next_id():
+    new_id = 1000
+    for pupil in pupils:
+        if pupil["id"] >= new_id:
+            new_id = pupil["id"] + 1
+    return new_id
 
-while action_choice != 5: \
- \
+
+def print_pupils_single():
+    # read the pupil's id
+    id_key = input("Give the id of the student you want printed: ").strip()
+    while not id_key.isdigit() or int(id_key) < 1000:
+        id_key = input("Give the student's id (must be an integer >= 1000): ").strip()
+    print()
+
+    # find the pupil in the database
+    for pupil in pupils:
+        if pupil["id"] == int(id_key):
+            print_pupil(pupil)
+            break
+    else:
+        print("Pupil not in the system.")
+
+
+def print_pupils_details():
+    pupil_counter = 0
+    for pupil in pupils:
+        pupil_counter += 1
+        print_pupil(pupil)
+        if pupil_counter < len(pupils):
+            print()
+
+
+def print_pupils_names():
+    pupil_counter = 0
+    for pupil in pupils:
+        pupil_counter += 1
+        print(f"Pupil {pupil_counter}: {pupil['first name']} {pupil['fathers name'][0]}. {pupil['last name']}")
+        if pupil_counter < len(pupils):
+            print()
+
+
+def create_pupil():
+    # minimum and maximum number of classes
+    min_class_number = 1
+    max_class_number = 6
+    pupil_classes = (list(str(number) for number in range(min_class_number, max_class_number + 1)))
+
+    # read first name
+    first_name = input("Give first name: ").strip().capitalize()
+    while not first_name.isalpha():
+        first_name = input("Give first name (must only include letters): ").strip().capitalize()
+
+    # read last name
+    last_name = input("Give last name: ").strip().capitalize()
+    while not last_name.isalpha():
+        last_name = input("Give last name (must only include letters): ").strip().capitalize()
+
+    # read father's name
+    fathers_name = input("Give father's name: ").strip().capitalize()
+    while not fathers_name.isalpha():
+        fathers_name = input("Give father's name (must only include letters): ").strip().capitalize()
+
+    # check if the given name already exist in the pupil database
+    create_new_pupil = True
+    for pupil in pupils:
+        if first_name == pupil["first name"] and last_name == pupil["last name"] \
+                and fathers_name == pupil["fathers name"]:
+            create_new_pupil = input("\nThere already is a pupil with the same name in the system.\nIf you "
+                                     "want to proceed with the new pupil press 1, else press 0: ")
+            while create_new_pupil not in ("0", "1"):
+                create_new_pupil = input(
+                    "If you want to proceed with the new pupil press 1, else press 0 (1 "
+                    "or 0): ")
+            if int(create_new_pupil) == 1:
+                print()
+            create_new_pupil = bool(int(create_new_pupil))
+
+    """ if given name didn't already exist in the pupil database of the user chose to keep inputting data, 
+        read the rest of the pupil's information """
+    if create_new_pupil:
+
+        # read age
+        age = input("Give age: ").strip()
+        while not age.isdigit() or int(age) <= 0:
+            age = input("Give age (must only include one integer): ").strip()
+
+        # read class
+        pupil_class = input("Give class: ").strip()
+        while pupil_class not in pupil_classes:
+            pupil_class = input(f"Give class ({pupil_classes}): ").strip()
+
+        # read identity number
+        identity_number = input("Give identity number (0 if no id): ").strip().upper()
+        while not identity_number.isalnum() or len(identity_number) < 1:
+            identity_number = input(f"Give identity number (must only contain letters and integers): ") \
+                .strip().upper()
+
+        # create and save the new pupil
+        new_pupil = {
+            "id": next_id(),
+            "first name": first_name,
+            "last name": last_name,
+            "fathers name": fathers_name,
+            "age": age,
+            "class": pupil_class
+        }
+        if identity_number != '0':
+            new_pupil["identity number"] = identity_number
+
+        pupils.append(new_pupil)
+        print(f"\n{'=' * 30}\n")
+        return new_pupil
+
+
+def print_pupils():
+    # read action choice
+    action_choice = input("Available actions:\n"
+                          "1. Print single pupil\n"
+                          "2. Print all pupils with extensive info\n"
+                          "3. Print all pupils with basic info\n\n"
+                          "Pick an action: ").strip()
+    while action_choice not in {"1", "2", "3"}:
+        action_choice = input("Pick an action (1 to 3): ")
+    print(f"\n{'=' * 30}\n")
+    action_choice = int(action_choice)
+
+    if action_choice == 1:
+        print_pupils_single()
+    elif action_choice == 2:
+        print_pupils_details()
+    else:
+        print_pupils_names()
+
+
+def main():
+    print(f"{'=' * 30}\n")
+    action_choice = input_menu_choice()
+
+    while action_choice != 5:
+
         # create record action
         if action_choice == 1:
+            new_pupil = create_pupil()
+            if new_pupil is not None:
+                print(f"New pupil saved successfully:\n")
+                print_pupil(new_pupil)
 
-            # read first name
-            first_name = input("Give first name: ").strip().capitalize()
-            while not first_name.isalpha():
-                first_name = input("Give first name (must only include letters): ").strip().capitalize()
+        # print existing pupil(s)
+        elif action_choice == 2:
+            print_pupils()
 
-            # read last name
-            last_name = input("Give last name: ").strip().capitalize()
-            while not last_name.isalpha():
-                last_name = input("Give last name (must only include letters): ").strip().capitalize()
-
-            # read father's name
-            fathers_name = input("Give father's name: ").strip().capitalize()
-            while not fathers_name.isalpha():
-                fathers_name = input("Give father's name (must only include letters): ").strip().capitalize()
-
-            # check if the given name already exist in the student database
-            create_new_student = True
-            for student in students:
-                if first_name == student["first name"] and last_name == student["last name"] \
-                        and fathers_name == student["fathers name"]:
-                    create_new_student = input("\nThere already is a student with the same name in the system.\nIf you "
-                                               "want to proceed with the new student press 1, else press 0: ")
-                    while create_new_student not in ("0", "1"):
-                        create_new_student = input("If you want to proceed with the new student press 1, else press 0 (1 "
-                                                   "or 0): ")
-                    if int(create_new_student) == 1:
-                        print()
-                    create_new_student = bool(int(create_new_student))
-
-            """if given name didn't already exist in the student database of the user chose to keep inputting data, 
-            read the rest of the student's information """
-            if create_new_student:
-
-                # read age
-                age = input("Give age: ").strip()
-                while not age.isdigit() or int(age) <= 0:
-                    age = input("Give age (must only include one integer): ").strip()
-
-                # read class
-                student_class = input("Give class: ").strip()
-                while student_class not in student_classes:
-                    student_class = input(f"Give class ({student_classes}): ").strip()
-
-                # read identity number
-                identity_number = input("Give identity number (0 if no id): ").strip().upper()
-                while not identity_number.isalnum() or len(identity_number) < 1:
-                    identity_number = input(f"Give identity number (must only contain letters and integers): ") \
-                        .strip().upper()
-
-                # calculate the new student's id
-                new_id = 1000
-                for student in students:
-                    if student["id"] >= new_id:
-                        new_id = student["id"]
-
-                # add the new student to the student database
-                new_student = {
-                    "id": new_id,
-                    "first name": first_name,
-                    "last name": last_name,
-                    "fathers name": fathers_name,
-                    "age": age,
-                    "class": student_class
-                }
-
-                if identity_number != '0':
-                    new_student["identity number"] = identity_number
-                students.append(new_student)
-
-                print(separator_string)
-
-                # print the information of the new student
-                max_print_length = 14
-                if "identity number" in new_student.keys():
-                    max_print_length = 16
-                print(f"New student saved successfully:\n")
-                print(f"First name:\t {new_student['first name']}\n"
-                      f"Last name:\t {new_student['last name']}".expandtabs(max_print_length))
-                if "identity number" in new_student.keys():
-                    print(f"Father's name:\t {new_student['fathers name']}".expandtabs(max_print_length))
-                else:
-                    print(f"Father's name: {new_student['fathers name']}")
-                print(f"Age:\t {new_student['age']}\n"
-                      f"Class:\t {new_student['class']}".expandtabs(max_print_length))
-                if "identity number" in new_student.keys():
-                    print(f"Identity number: {new_student['identity number']}")
-
-        # if the chosen action has not been implemented yet, print an according message
-        elif action_choice in [2, 3, 4, 5]:
+        # update existing pupil
+        elif action_choice == 3:
             print("Action not available yet.")
 
-        print(separator_string)
+        # delete existing pupil
+        elif action_choice == 4:
+            print("Action not available yet.")
 
-        # read action choice
-        action_choice = input(menu_string).strip()
-        while action_choice not in {"1", "2", "3", "4", "5", "5"}:
-            action_choice = input("Pick an action (1 to 5): ")
-        action_choice = int(action_choice)
-        print(separator_string)
+        print(f"\n{'=' * 30}\n")
+        action_choice = input_menu_choice()
 
-# once the user has chosen the fifth action the loop is broken and an exit message is printed
-print(f"Exiting application.\n\n{'=' * 30}")
+    print(f"Exiting application.\n\n{'=' * 30}")
+
+
+main()
