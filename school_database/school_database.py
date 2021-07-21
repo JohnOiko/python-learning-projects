@@ -107,8 +107,8 @@ def input_updated_details(pupil):
         updated_identity_number = input("Give updated identity number: ").strip().upper()
         while not (updated_identity_number.isalnum() and len(updated_identity_number) > 0
                    or updated_identity_number == ""):
-            updated_identity_number = input("Give valid updated identity number "
-                                            "(or leave empty for no identity number): ").strip().upper()
+            updated_identity_number = input("Give valid updated identity number (or leave empty for no identity "
+                                            "number): ").strip().upper()
         if updated_identity_number == "":
             pupil.pop("identity number")
         else:
@@ -149,7 +149,7 @@ def print_pupils_names():
             print()
 
 
-def search_pupil_by_name(surname):
+def search_pupil_by_surname(surname):
     return [pupil for pupil in pupils if pupil["last name"] == surname]
 
 
@@ -157,6 +157,55 @@ def search_pupil_by_id(id_key):
     for pupil in pupils:
         if pupil["id"] == int(id_key):
             return pupil
+
+
+def delete_pupil_by_id(id_key):
+    pupil_to_be_deleted = search_pupil_by_id(id_key)
+    if pupil_to_be_deleted is not None:
+        pupils.remove(search_pupil_by_id(id_key))
+        print("Pupil successfully deleted.")
+    else:
+        print("There are no pupils in the database with the given id.")
+
+
+def delete_pupil_by_surname(surname):
+    pupils_to_be_deleted = search_pupil_by_surname(surname)
+    # if no pupils with the searched for surname were found print error message
+    if len(pupils_to_be_deleted) == 0:
+        print("There are no pupils in the database with the given surname.")
+    # else if only one pupil was found delete them
+    elif len(pupils_to_be_deleted) == 1:
+        pupils.remove(pupils_to_be_deleted[0])
+        print("Pupil successfully deleted.")
+    # else if more than one pupils were found, let the user pick one based on their id and delete them
+    else:
+        # print each pupil found and their id
+        print("Here is the list of students that match the surname you entered:\n")
+        for pupil in pupils_to_be_deleted:
+            print(f"Id: {pupil['id']}")
+            print_pupil(pupil)
+            print()
+
+        # keep reading ids until the one given exists in the list of pupils found with the given surname
+        pupil_to_be_deleted = None
+        id_key = input("Give the id of the pupil you want to delete: ").strip()
+        if id_key.isdigit() and int(id_key) >= 1000:
+            for pupil in pupils_to_be_deleted:
+                if pupil["id"] == int(id_key):
+                    pupil_to_be_deleted = pupil
+                    break
+            while pupil_to_be_deleted is None:
+                id_key = input("Give the id of the pupil you want to delete: ")
+                if id_key.isdigit() and int(id_key) >= 1000:
+                    for pupil in pupils_to_be_deleted:
+                        if pupil["id"] == int(id_key):
+                            pupil_to_be_deleted = pupil
+                            break
+        print(f"\n{'=' * 75}\n")
+
+        # delete the selected pupil
+        pupils.remove(pupil_to_be_deleted)
+        print("Pupil successfully deleted.")
 
 
 def create_pupil():
@@ -283,7 +332,7 @@ def update_pupil():
             surname_key = input("Give a valid surname to search for: ").strip().capitalize()
         print(f"\n{'=' * 75}\n")
 
-        pupils_to_be_updated = search_pupil_by_name(surname_key)
+        pupils_to_be_updated = search_pupil_by_surname(surname_key)
         # if no pupils with the searched for surname were found print error message
         if len(pupils_to_be_updated) == 0:
             print("There is no pupils in the database with the given surname.")
@@ -295,7 +344,7 @@ def update_pupil():
         # else if more than one pupils were found, let the user pick one based on their id and update their information
         else:
             # print each pupil found and their id
-            print("Here is the list of students that have the surname you entered:\n")
+            print("Here is the list of students that match the surname you entered:\n")
             for pupil in pupils_to_be_updated:
                 print(f"Id: {pupil['id']}")
                 print_pupil(pupil)
@@ -322,6 +371,33 @@ def update_pupil():
             input_updated_details(pupil_to_be_updated)
 
 
+def delete_pupil():
+    # read search type for deletion
+    deletion_type = input("Do you want to delete by id (\"i\") or by surname (\"s\"): ").strip().lower()
+    while deletion_type != "i" and deletion_type != "s":
+        deletion_type = input("Pick a valid deletion method (\"i\" for id or \"s\" for surname): ").strip().lower()
+
+    # delete by id
+    if deletion_type == "i":
+        # read id to search for
+        id_key = input("Give an id to delete the student with matching id: ").strip()
+        if not id_key.isdigit() or int(id_key) < 1000:
+            id_key = input("Give an id to delete the student with matching id (must be an integer >= 1000): ").strip()
+        id_key = int(id_key)
+
+        delete_pupil_by_id(id_key)
+
+    # search by surname
+    else:
+        # read surname to search for
+        surname_key = input("Give a surname to delete a student with a matching surname: ").strip().capitalize()
+        if not surname_key.isalpha() or len(surname_key) < 1:
+            surname_key = input("Give a valid surname to delete a student with a matching surname: ") \
+                .strip().capitalize()
+
+        delete_pupil_by_surname(surname_key)
+
+
 def main():
     print(f"{'=' * 75}\n")
     action_choice = input_menu_choice()
@@ -345,7 +421,7 @@ def main():
 
         # delete existing pupil
         elif action_choice == 4:
-            print("Action not available yet.")
+            delete_pupil()
 
         print(f"\n{'=' * 75}\n")
         action_choice = input_menu_choice()
