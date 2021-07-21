@@ -1,4 +1,3 @@
-import random
 from random import seed, randrange, choice
 from datetime import datetime
 seed(datetime.now())
@@ -54,7 +53,6 @@ def computer_moves(level):
                     x, y = i, j
                 if symbol_counter == 2 and x != -1:
                     print(f"The computer placed an O on the position [{x}, {y}]\n")
-                    print("Source: row\n")
                     return x, y
 
         # check columns for near player victory
@@ -68,7 +66,6 @@ def computer_moves(level):
                     x, y = i, j
                 if symbol_counter == 2 and x != -1:
                     print(f"The computer placed an O on the position [{x}, {y}]\n")
-                    print("Source:col\n")
                     return x, y
 
         # check main diagonal for near player victory
@@ -81,7 +78,6 @@ def computer_moves(level):
                 elif i == j and board[i][j] == " ":
                     x, y = i, j
                 if symbol_counter == 2 and x != -1:
-                    print("Source: main diag\n")
                     print(f"The computer placed an O on the position [{x}, {y}]\n")
                     return x, y
 
@@ -92,17 +88,15 @@ def computer_moves(level):
             for j in range(len(board[i])):
                 if i + j == len(board[i]) - 1 and board[i][j] == "X":
                     symbol_counter += 1
-                elif i + j == len(board[i]) - 1  and board[i][j] == " ":
+                elif i + j == len(board[i]) - 1 and board[i][j] == " ":
                     x, y = i, j
                 if symbol_counter == 2 and x != -1:
                     print(f"The computer placed an O on the position [{x}, {y}]\n")
-                    print("Source: sec diag\n")
                     return x, y
 
         # check if the center of the board is empty
         if board[row_count // 2][column_count // 2] == " ":
             print(f"The computer placed an O on the position [{row_count // 2}, {column_count // 2}]\n")
-            print("Source: center of board\n")
             return row_count // 2, column_count // 2
 
         # check if the corners of the board are empty
@@ -115,10 +109,10 @@ def computer_moves(level):
             empty_corners.append((row_count - 1, column_count - 1))
         if board[row_count - 1][0] == " ":
             empty_corners.append((row_count - 1, 0))
-        x, y = choice(empty_corners)
-        print(f"The computer placed an O on the position [{x}, {y}]\n")
-        print("Source: random corner\n")
-        return x, y
+        if len(empty_corners) > 0:
+            x, y = choice(empty_corners)
+            print(f"The computer placed an O on the position [{x}, {y}]\n")
+            return x, y
 
         # check all positions that are in the middle of rows and columns
         empty_middles = []
@@ -128,10 +122,10 @@ def computer_moves(level):
         for j in range(column_count):
             if board[row_count // 2][j] == " ":
                 empty_middles.append((row_count // 2, j))
-        x, y = choice(empty_middles)
-        print(f"The computer placed an O on the position [{x}, {y}]\n")
-        print("Source: middle of row or col\n")
-        return x, y
+        if len(empty_middles) > 0:
+            x, y = choice(empty_middles)
+            print(f"The computer placed an O on the position [{x}, {y}]\n")
+            return x, y
 
         # if no other move was possible, return a random available position
         x = randrange(row_count)
@@ -142,7 +136,6 @@ def computer_moves(level):
             y = randrange(0, column_count)
 
         print(f"The computer placed an O on the position [{x}, {y}]\n")
-        print("Source: random position\n")
         return x, y
 
 
@@ -217,6 +210,7 @@ def main():
     level = input("Give difficulty level: ")
     while level not in ["1", "2"]:
         level = input("Give difficulty level (1 or 2): ")
+    print()
     level = int(level)
 
     # initialize counters, winner and end flag
@@ -248,9 +242,11 @@ def main():
         # update board with the player's move
         board[x][y] = player_symbol
 
-        # increment turn counter and end game if there is a draw
-        if turn_counter == 9:
-            winner = ''
+        # if there is no empty position in the board end the game
+        for row in board:
+            if " " in row:
+                break
+        else:
             end_game = True
 
         # check if the current player has won
