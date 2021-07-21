@@ -1,3 +1,8 @@
+from random import seed, randrange
+from datetime import datetime
+
+seed(datetime.now())
+
 row_count = 3
 column_count = 3
 board = [[' ' for column in range(column_count)] for row in range(row_count)]
@@ -19,13 +24,25 @@ def print_board():
         i += 1
 
 
+def computer_moves(computer_symbol):
+    x = randrange(row_count)
+    y = randrange(column_count)
+    print(f"[{x}, {y}]")
+    while board[x][y] != " ":
+        x = randrange(0, row_count)
+        y = randrange(0, column_count)
+
+    print(f"The computer placed an {computer_symbol} on the position [{x}, {y}]\n")
+    return x, y
+
+
 def input_move(player_symbol):
-    print(f"{'First' if player_symbol == 'O' else 'Second'} player's turn ({player_symbol}) - input the row and "
+    print(f"Your turn ({player_symbol}), input the row and "
           f"column of your next move.")
     x = input("Row: ")
     y = input("Column: ")
     print()
-    while not x.isdigit() or not y.isdigit() or not 0 <= int(x) <= row_count - 1 or not 0 <= int(y) <= column_count - 1 \
+    while not x.isdigit() or not y.isdigit() or not 0 <= int(x) <= row_count - 1 or not 0 <= int(y) <= column_count - 1\
             or board[int(x)][int(y)] != " ":
         print("Input a valid row and column for your next move.")
         x = input("Row (0 - 2): ")
@@ -87,7 +104,7 @@ def check_winner(player_symbol):
 
 def main():
     # initialize counters, winner and end flag
-    player_symbol = 'X'
+    player_symbol = 'O'
     turn_counter = 0
     winner = 0
     end_game = False
@@ -105,15 +122,19 @@ def main():
 
         turn_counter += 1
 
-        # read the player's next move
-        x, y = input_move(player_symbol)
+        if player_symbol == 'X':
+            # read the player's next move
+            x, y = input_move(player_symbol)
+        else:
+            # save the computer's next random move
+            x, y = computer_moves(player_symbol)
 
         # update board with the player's move
         board[x][y] = player_symbol
 
         # increment turn counter and end game if there is a draw
         if turn_counter == 9:
-            winner = '0'
+            winner = ''
             end_game = True
 
         # check if the current player has won
@@ -126,10 +147,12 @@ def main():
     print()
 
     # if there is a winner print the according message, else print that there is a tie
-    if winner != '0':
-        print(f"Winner is the {'first' if winner == 'O' else 'second'} player ({winner}) after {turn_counter} turns!")
+    if winner == 'O':
+        print(f"You lost after {turn_counter} turns.")
+    elif winner == 'X':
+        print(f"You won after {turn_counter} turns!")
     else:
-        print(f"We have a draw after {turn_counter} turns!")
+        print(f"Draw after {turn_counter} turns!")
 
 
 main()
