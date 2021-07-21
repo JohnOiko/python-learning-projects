@@ -1,32 +1,21 @@
+import json
+
 # initial pupil database
-pupils = [
-    {
-        "id": 1000,
-        "first name": "John",
-        "last name": "Doe",
-        "fathers name": "Michael",
-        "age": 11,
-        "class": 1,
-        "identity number": "AN123949"
-    },
-    {
-        "id": 1001,
-        "first name": "Mary",
-        "last name": "Poppins",
-        "fathers name": "Chris",
-        "age": 10,
-        "class": 3,
-        "identity number": "AE123981"
-    },
-    {
-        "id": 1002,
-        "first name": "John",
-        "last name": "Wick",
-        "fathers name": "Chiwetel",
-        "age": 7,
-        "class": 6
-    }
-]
+pupils = []
+
+
+def init_pupils_data():
+    global pupils
+    try:
+        with open("pupils.json", "r") as f:
+            pupils = json.load(f)
+    except FileNotFoundError:
+        pupils = []
+
+
+def save_pupils_data():
+    with open("pupils.json", "w") as f:
+        json.dump(pupils, f)
 
 
 def print_pupil(pupil):
@@ -214,22 +203,23 @@ def create_pupil():
     while not fathers_name.isalpha():
         fathers_name = input("Give father's name (must only include letters): ").strip().capitalize()
 
-    # check if the given name already exist in the pupil database
+    # if there is at least one pupil in the database check if the given name already exists in the pupil database
     create_new_pupil = True
-    for pupil in pupils:
-        if first_name == pupil["first name"] and last_name == pupil["last name"] \
-                and fathers_name == pupil["fathers name"]:
-            create_new_pupil = input("\nThere already is a pupil with the same name in the system.\nIf you "
-                                     "want to proceed with the new pupil press 1, else press 0: ")
-            while create_new_pupil not in ("0", "1"):
-                create_new_pupil = input(
-                    "If you want to proceed with the new pupil press 1, else press 0 (1 "
-                    "or 0): ")
-            if int(create_new_pupil) == 1:
-                print()
-            else:
-                return
-            create_new_pupil = bool(int(create_new_pupil))
+    if len(pupils) > 0:
+        for pupil in pupils:
+            if first_name == pupil["first name"] and last_name == pupil["last name"] \
+                    and fathers_name == pupil["fathers name"]:
+                create_new_pupil = input("\nThere already is a pupil with the same name in the system.\nIf you "
+                                         "want to proceed with the new pupil press 1, else press 0: ")
+                while create_new_pupil not in ("0", "1"):
+                    create_new_pupil = input(
+                        "If you want to proceed with the new pupil press 1, else press 0 (1 "
+                        "or 0): ")
+                if int(create_new_pupil) == 1:
+                    print()
+                else:
+                    return
+                create_new_pupil = bool(int(create_new_pupil))
 
     """ if given name didn't already exist in the pupil database of the user chose to keep inputting data, 
         read the rest of the pupil's information """
@@ -270,6 +260,11 @@ def create_pupil():
 
 
 def print_existing_pupils():
+    # if the pupils database is empty, print an according message and return
+    if len(pupils) == 0:
+        print("No pupils saved in the database currently.")
+        return
+
     # read action choice
     action_choice = input("Available actions:\n"
                           "1. Print single pupil\n"

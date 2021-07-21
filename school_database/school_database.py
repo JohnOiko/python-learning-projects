@@ -22,6 +22,10 @@ def input_menu_choice():
 
 
 def main():
+    # load pupils and teacher from the disk
+    init_pupils_data()
+    init_teachers_data()
+
     print(f"{'=' * 75}\n")
     action_choice = input_menu_choice()
 
@@ -62,6 +66,10 @@ def main():
         # print separator after every completed action and read the next action from the main menu
         print(f"\n{'=' * 75}\n")
         action_choice = input_menu_choice()
+
+    # save pupils and teachers data in a json file in the disk
+    save_pupils_data()
+    save_teachers_data()
 
     print(f"Exiting application.\n\n{'=' * 75}")
 

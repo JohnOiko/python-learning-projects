@@ -1,21 +1,21 @@
+import json
+
 # initial teacher database
-teachers = [
-    {
-        "teacher_id": 1000,
-        "name": "Maria",
-        "surname": "Philiou",
-    },
-    {
-        "teacher_id": 1001,
-        "name": "Dimitris",
-        "surname": "Papakostas",
-    },
-    {
-        "teacher_id": 1002,
-        "name": "Giannis",
-        "surname": "Goumas",
-    },
-]
+teachers = []
+
+
+def init_teachers_data():
+    global teachers
+    try:
+        with open("teachers.json", "r") as f:
+            teachers = json.load(f)
+    except FileNotFoundError:
+        teachers = []
+
+
+def save_teachers_data():
+    with open("teachers.json", "w") as f:
+        json.dump(teachers, f)
 
 
 def input_teacher_id():
@@ -84,6 +84,12 @@ def save_new_teacher():
 
 
 def print_existing_teacher():
+
+    # if the teachers database is empty, print an according message and return
+    if len(teachers) == 0:
+        print("No teachers saved in the database currently.")
+        return
+
     teacher_to_be_printed = read_teacher(input_teacher_id())
     if teacher_to_be_printed is None:
         print("No teacher with the given id in the database.")
