@@ -1,5 +1,5 @@
 from mod_pupils import *
-from mod_teachers import *
+from teachers import Teachers
 
 
 def input_menu_choice():
@@ -21,55 +21,86 @@ def input_menu_choice():
     return int(action_choice)
 
 
-def main():
-    # load pupils and teacher from the disk
-    init_pupils_data()
-    init_teachers_data()
+def create_teacher(teachers):
+    # read name
+    first_name = input("Give first name: ").strip().capitalize()
+    while not first_name.isalpha():
+        first_name = input("Give first name (must only include letters): ").strip().capitalize()
 
+    # read surname
+    last_name = input("Give last name:\t ".expandtabs(16)).strip().capitalize()
+    while not last_name.isalpha():
+        last_name = input("Give last name (must only include letters): ").strip().capitalize()
+
+    # create the new teacher
+    teachers.create_teacher(first_name, last_name)
+
+
+def print_teacher(teachers):
+    # if the teachers database is empty, print an according message and return
+    if len(teachers.teachers) == 0:
+        print("No teachers saved in the database currently.")
+        return
+
+    # else find the teacher that matches the given teacher id and print their information
+    teacher = teachers.read_teacher(teachers.input_teacher_id("print"))
+    if teacher is None:
+        print("No teacher with the given id in the database.")
+    else:
+        print()
+        teacher.print_teacher()
+
+
+def update_teacher(teachers):
+    # if the teachers database is empty, print an according message and return
+    if len(teachers.teachers) == 0:
+        print("No teachers saved in the database currently.")
+        return
+
+    # else if there are teachers in the database update the teacher that matches the given teacher id
+    teachers.update_teacher(teachers.input_teacher_id("update"))
+
+
+def delete_teacher(teachers):
+    teachers.delete_teacher()
+
+
+def main():
+    # load pupils and teachers from the disk
+    init_pupils_data()
+    teachers = Teachers()
+
+    # print the action menu and read the user's desired action
     print(f"{'=' * 75}\n")
     action_choice = input_menu_choice()
 
+    # keep completing actions until the user chooses to exit the application (action 9)
     while action_choice != 9:
-
-        # create pupil
+        # perform the action that corresponds to the index of the user's action choice
         if action_choice == 1:
             create_pupil()
-
-        # print existing pupil(s)
         elif action_choice == 2:
             print_existing_pupils()
-
-        # update existing pupil
         elif action_choice == 3:
             update_existing_pupil()
-
-        # delete existing pupil
         elif action_choice == 4:
             delete_pupil()
-
-        # save new teacher
         elif action_choice == 5:
-            save_new_teacher()
-
-        # print existing teacher
+            create_teacher(teachers)
         elif action_choice == 6:
-            print_existing_teacher()
-
-        # update existing teacher
+            print_teacher(teachers)
         elif action_choice == 7:
-            update_existing_teacher()
-
-        # delete existing teacher
+            update_teacher(teachers)
         elif action_choice == 8:
-            delete_teacher(input_teacher_id())
+            delete_teacher(teachers)
 
-        # print separator after every completed action and read the next action from the main menu
+        # print separator after every completed action and read the next action after printing the main menu
         print(f"\n{'=' * 75}\n")
         action_choice = input_menu_choice()
 
-    # save pupils and teachers data in a json file in the disk
+    # save the pupils' and teachers' data in a json file in the disk
     save_pupils_data()
-    save_teachers_data()
+    teachers.save_teachers_data()
 
     print(f"Exiting application.\n\n{'=' * 75}")
 
