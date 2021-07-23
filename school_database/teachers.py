@@ -28,7 +28,7 @@ class Teachers:
     def input_teacher_id(self, action_type):
         teacher_id = input(f"Give the id of the teacher whose information you want to {action_type}: ").strip()
         if not teacher_id.isdigit() or int(teacher_id) < 1:
-            teacher_id = input("Give the id of the teacher whose information you want to {action_type} "
+            teacher_id = input(f"Give the id of the teacher whose information you want to {action_type} "
                                "(must be a positive integer): ").strip()
         return int(teacher_id)
 
@@ -80,7 +80,7 @@ class Teachers:
 
             print(f"Teacher's {'first' if update_choice == '1' else 'last'} name updated successfully.")
         else:
-            print("\nNo teacher with the given id found in the database.")
+            print("No teacher with the given id found in the database.")
 
     def delete_teacher(self):
         teacher = self.read_teacher(self.input_teacher_id("delete"))
