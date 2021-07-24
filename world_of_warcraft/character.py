@@ -1,19 +1,21 @@
 from random import randrange
 
 
-# class that represents a single character
+# class that represents a generic character
 class Character:
-    def __init__(self, character_name, equipment, attack_speed, delay):
+    def __init__(self, character_name, equipment, attack_speed, delay, max_health=100, max_delay=5, attack_range=(3, 11)):
         self.character_name = character_name.capitalize()
         self.equipment = equipment
-        self.health = 100 * self.equipment.cape
-        self.max_health = 100 * self.equipment.cape
+        self.max_health = max_health * self.equipment.cape
+        self.health = self.max_health
         self.attack_speed = attack_speed
         self.delay = delay
+        self.max_delay = max_delay
+        self.attack_range = attack_range
 
     def attack(self):
-        self.delay = 5 - self.attack_speed
-        return round(randrange(3, 11) * self.equipment.sword)
+        self.delay = self.max_delay - self.attack_speed
+        return round(randrange(self.attack_range[0], self.attack_range[1]) * self.equipment.sword)
 
     def is_dead(self):
         return self.health == 0
