@@ -1,24 +1,54 @@
 from pupils import Pupils
 from teachers import Teachers
+from lessons import Lessons
 
 
 def input_menu_choice():
-    # read action choice
-    action_choice = input("Available actions:\n"
-                          "1. Create pupil\n"
-                          "2. Print pupil(s)\n"
-                          "3. Update pupil\n"
-                          "4. Delete pupil\n"
-                          "5. Create teacher\n"
-                          "6. Print teacher\n"
-                          "7. Update teacher\n"
-                          "8. Delete teacher\n"
-                          "9. Exit application\n\n"
-                          "Pick an action: ").strip()
-    while action_choice not in [str(number) for number in range(1, 10)]:
-        action_choice = input("Pick an action (1 to 9): ")
+    # read action type choice
+    action_type_choice = input("Available actions:\n"
+                               "1. Manage pupils\n"
+                               "2. Manage teachers\n"
+                               "3. Manage lessons\n"
+                               "4. Exit application\n\n"
+                               "Pick an action: ").strip()
+    while action_type_choice not in [str(number) for number in range(1, 5)]:
+        action_type_choice = input("Pick an action (1 to 4): ")
     print(f"\n{'=' * 75}\n")
-    return int(action_choice)
+    if action_type_choice == "4":
+        return 13
+
+    if action_type_choice == "1":
+        action_choice_menu = ("Available actions:\n"
+                              "1. Create pupil\n"
+                              "2. Print pupil(s)\n"
+                              "3. Update pupil\n"
+                              "4. Delete pupil\n"
+                              "5. Exit application\n\n"
+                              "Pick an action: ")
+    elif action_type_choice == "2":
+        action_choice_menu = ("Available actions:\n"
+                              "1. Create teacher\n"
+                              "2. Print teacher\n"
+                              "3. Update teacher\n"
+                              "4. Delete teacher\n"
+                              "5. Exit application\n\n"
+                              "Pick an action: ")
+    else:
+        action_choice_menu = ("Available actions:\n"
+                              "1. Create lesson\n"
+                              "2. Print lesson\n"
+                              "3. Update lesson\n"
+                              "4. Delete lesson\n"
+                              "5. Exit application\n\n"
+                              "Pick an action: ")
+
+    action_choice = input(action_choice_menu).strip()
+    while action_choice not in [str(number) for number in range(1, 6)]:
+        action_choice = input("Pick an action (1 to 5): ")
+    print(f"\n{'=' * 75}\n")
+    if action_choice == "5":
+        return 13
+    return (int(action_type_choice) - 1) * 4 + int(action_choice)
 
 
 def create_pupil(pupils):
@@ -227,18 +257,53 @@ def update_teacher(teachers):
 def delete_teacher(teachers):
     teachers.delete_teacher()
 
+def create_lesson(lessons):
+    # read lesson name
+    lesson_name = input("Give lesson's name: ").strip().capitalize()
+    while not lesson_name.isalpha():
+        lesson_name = input("Give lesson's name (must only include letters): ").strip().capitalize()
+
+    # create the new teacher
+    lessons.create_lesson(lesson_name)
+
+def print_lesson(lessons, teachers, pupils):
+    # if the lessons database is empty, print an according message and return
+    if len(lessons.lessons) == 0:
+        print("No lessons saved in the database currently.")
+        return
+
+    # else find the lesson that matches the given lesson id and print their information
+    lesson = lessons.read_lesson(lessons.input_lesson_id("print"))
+    if lesson is None:
+        print("No lesson with the given id in the database.")
+    else:
+        print(f"\n{lesson.to_string(teachers, pupils)}")
+
+def update_lesson(lessons, teachers, pupils):
+    # if the lessons database is empty, print an according message and return
+    if len(lessons.lessons) == 0:
+        print("No lessons saved in the database currently.")
+        return
+
+    # else if there are lessons in the database update the lesson that matches the given lesson id
+    lessons.update_lesson(lessons.input_lesson_id("update"), teachers, pupils)
+
+def delete_lesson(lessons):
+    lessons.delete_lesson()
+
 
 def main():
     # load pupils and teachers from the disk
     pupils = Pupils()
     teachers = Teachers()
+    lessons = Lessons()
 
     # print the action menu and read the user's desired action
     print(f"{'=' * 75}\n")
     action_choice = input_menu_choice()
 
     # keep completing actions until the user chooses to exit the application (action 9)
-    while action_choice != 9:
+    while action_choice != 13:
         # perform the action that corresponds to the index of the user's action choice
         if action_choice == 1:
             create_pupil(pupils)
@@ -256,6 +321,14 @@ def main():
             update_teacher(teachers)
         elif action_choice == 8:
             delete_teacher(teachers)
+        elif action_choice == 9:
+            create_lesson(lessons)
+        elif action_choice == 10:
+            print_lesson(lessons, teachers, pupils)
+        elif action_choice == 11:
+            update_lesson(lessons, teachers, pupils)
+        elif action_choice == 12:
+            delete_lesson(lessons)
 
         # print separator after every completed action and read the next action after printing the main menu
         print(f"\n{'=' * 75}\n")
@@ -264,6 +337,7 @@ def main():
     # save the pupils' and teachers' data in a json file in the disk
     pupils.save_pupils_data()
     teachers.save_teachers_data()
+    lessons.save_lessons_data()
 
     print(f"Exiting application.\n\n{'=' * 75}")
 
