@@ -1,5 +1,6 @@
-from teacher import Teacher
 import json
+
+from teacher import Teacher
 
 
 class Teachers:
@@ -48,7 +49,7 @@ class Teachers:
         if teacher_created:
             print(f"\n{'=' * 75}\n")
             print("New teacher successfully saved:\n")
-            new_teacher.print_teacher()
+            print(new_teacher)
         else:
             print("\nTeacher already in the database.")
 
@@ -82,11 +83,12 @@ class Teachers:
         else:
             print("No teacher with the given id found in the database.")
 
-    def delete_teacher(self):
+    def delete_teacher(self, lessons):
         teacher = self.read_teacher(self.input_teacher_id("delete"))
 
         if teacher is None:
             print("No teacher with the given id found in the database.")
         else:
             self.teachers.remove(teacher)
+            lessons.delete_teacher(teacher.teacher_id)
             print("Teacher deleted successfully.")

@@ -1,5 +1,6 @@
 class Pupil:
-    def __init__(self, first_name="", last_name="", fathers_name="", age=1, pupil_class="1", identity_number="", pupil_id=1001):
+    def __init__(self, first_name="", last_name="", fathers_name="", age=1, pupil_class="1", identity_number="",
+                 pupil_id=1001):
         self.first_name = first_name
         self.last_name = last_name
         self.fathers_name = fathers_name
@@ -18,7 +19,8 @@ class Pupil:
         self.pupil_id = pupil["pupil_id"]
 
     def to_dict(self):
-        new_pupil_dict = {"first_name": self.first_name, "last_name": self.last_name, "fathers_name": self.fathers_name, "age": self.age, "pupil_class": self.pupil_class}
+        new_pupil_dict = {"first_name": self.first_name, "last_name": self.last_name,
+                          "fathers_name": self.fathers_name, "age": self.age, "pupil_class": self.pupil_class}
         if self.identity_number != "":
             new_pupil_dict["identity_number"] = self.identity_number
         new_pupil_dict["pupil_id"] = self.pupil_id

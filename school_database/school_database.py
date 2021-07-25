@@ -153,7 +153,7 @@ def update_pupil(pupils):
             pupils.input_updated_details(pupil_to_be_updated)
 
 
-def delete_pupil(pupils):
+def delete_pupil(pupils, lessons):
     # read search type for deletion
     deletion_type = input("Do you want to delete by id (\"i\") or by last name (\"s\"): ").strip().lower()
     while deletion_type != "i" and deletion_type != "s":
@@ -168,6 +168,7 @@ def delete_pupil(pupils):
         pupil_id = int(pupil_id)
 
         pupils.delete_pupil_by_id(pupil_id)
+        lessons.delete_pupil(pupil_id)
 
     # search by last name
     else:
@@ -186,6 +187,7 @@ def delete_pupil(pupils):
         # else if only one pupil was found delete them
         elif len(pupils_to_be_deleted) == 1:
             pupils.delete_pupil_by_id(pupils_to_be_deleted[0].pupil_id)
+            lessons.delete_pupil(pupils_to_be_deleted[0].pupil_id)
 
         # else if more than one pupils were found, let the user pick one based on their id and delete them
         else:
@@ -213,6 +215,7 @@ def delete_pupil(pupils):
 
             # delete the selected pupil
             pupils.delete_pupil_by_id(pupils_to_be_deleted[0].pupil_id)
+            lessons.delete_pupil(pupils_to_be_deleted[0].pupil_id)
 
 
 def create_teacher(teachers):
@@ -254,8 +257,9 @@ def update_teacher(teachers):
     teachers.update_teacher(teachers.input_teacher_id("update"))
 
 
-def delete_teacher(teachers):
-    teachers.delete_teacher()
+def delete_teacher(teachers, lessons):
+    teachers.delete_teacher(lessons)
+
 
 def create_lesson(lessons):
     # read lesson name
@@ -265,6 +269,7 @@ def create_lesson(lessons):
 
     # create the new teacher
     lessons.create_lesson(lesson_name)
+
 
 def print_lesson(lessons, teachers, pupils):
     # if the lessons database is empty, print an according message and return
@@ -279,6 +284,7 @@ def print_lesson(lessons, teachers, pupils):
     else:
         print(f"\n{lesson.to_string(teachers, pupils)}")
 
+
 def update_lesson(lessons, teachers, pupils):
     # if the lessons database is empty, print an according message and return
     if len(lessons.lessons) == 0:
@@ -287,6 +293,7 @@ def update_lesson(lessons, teachers, pupils):
 
     # else if there are lessons in the database update the lesson that matches the given lesson id
     lessons.update_lesson(lessons.input_lesson_id("update"), teachers, pupils)
+
 
 def delete_lesson(lessons):
     lessons.delete_lesson()
@@ -312,7 +319,7 @@ def main():
         elif action_choice == 3:
             update_pupil(pupils)
         elif action_choice == 4:
-            delete_pupil(pupils)
+            delete_pupil(pupils, lessons)
         elif action_choice == 5:
             create_teacher(teachers)
         elif action_choice == 6:
@@ -320,7 +327,7 @@ def main():
         elif action_choice == 7:
             update_teacher(teachers)
         elif action_choice == 8:
-            delete_teacher(teachers)
+            delete_teacher(teachers, lessons)
         elif action_choice == 9:
             create_lesson(lessons)
         elif action_choice == 10:

@@ -1,7 +1,7 @@
-from lesson import Lesson
-from pupils import Pupils
-from teachers import Teachers
 import json
+
+from lesson import Lesson
+
 
 class Lessons:
     def __init__(self):
@@ -29,8 +29,8 @@ class Lessons:
     def input_lesson_id(self, action_type):
         lesson_id = input(f"Give the id of the lesson whose information you want to {action_type}: ").strip()
         if not lesson_id.isdigit() or int(lesson_id) < 1:
-            teacher_id = input(f"Give the id of the lesson whose information you want to {action_type} "
-                               "(must be an integer > 10000): ").strip()
+            lesson_id = input(f"Give the id of the lesson whose information you want to {action_type} "
+                              "(must be an integer > 10000): ").strip()
         return int(lesson_id)
 
     def create_lesson(self, lesson_name):
@@ -148,3 +148,13 @@ class Lessons:
         else:
             self.lessons.remove(lesson)
             print("Lesson deleted successfully.")
+
+    def delete_teacher(self, teacher_id):
+        for lesson in self.lessons:
+            if teacher_id in lesson.teacher_ids:
+                lesson.teacher_ids.remove(teacher_id)
+
+    def delete_pupil(self, pupil_id):
+        for lesson in self.lessons:
+            if pupil_id in lesson.pupil_ids:
+                lesson.pupil_ids.remove(pupil_id)

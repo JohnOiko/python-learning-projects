@@ -25,7 +25,6 @@ class Pupils:
                 next_id = pupil.pupil_id + 1
         return next_id
 
-
     def input_updated_details(self, pupil):
         # print the students current information
         print(f"{pupil}\n\n{'=' * 75}\n")
@@ -78,7 +77,6 @@ class Pupils:
                                         "number): ").strip().upper()
             pupil.identity_number = identity_number
         print("Pupil's details successfully updated.")
-
 
     def create_pupil(self):
         # available classes
@@ -160,7 +158,6 @@ class Pupils:
 
         print(f"\n{'=' * 75}\n")
         self.input_updated_details(pupil)
-
 
     def delete_pupil_by_id(self, pupil_id):
         pupil = self.search_pupil_by_id(pupil_id)
